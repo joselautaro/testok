@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Clientes</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 30px; background:#f6f7f9; }
+    h1 { margin-bottom: 14px; }
+    .msg-ok { padding:10px; background:#e8ffe8; border:1px solid #b6ffb6; border-radius:8px; margin-top: 10px; }
+
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #e6e6e6;
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 6px 18px rgba(0,0,0,.06);
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .top {
+      display:flex;
+      align-items:center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid #ddd;
+      background:#eee;
+      flex: 0 0 auto;
+    }
+
+    .name {
+      font-weight: 800;
+      font-size: 16px;
+      line-height: 1.2;
+    }
+
+    .meta {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .empty {
+      margin-top: 16px;
+      background:#fff;
+      border:1px dashed #ccc;
+      padding: 18px;
+      border-radius: 14px;
+      color:#666;
+    }
+
+    .grid{
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+
+  /* Desktop / default: 4 por fila */
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* Tablets: 3 por fila */
+@media (max-width: 1100px){
+  .grid{
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Mobile: 2 por fila */
+@media (max-width: 700px){
+  .grid{
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+  </style>
+</head>
+<body>
+
+<h1>Clientes</h1>
+
+<div th:if="${#lists.isEmpty(clientes)}" class="empty">
+  No hay clientes todavía.
+</div>
+<div class="msg-ok" th:if="${param.ok}" th:text="${param.ok}"></div>
+
+<div class="grid" th:if="${!#lists.isEmpty(clientes)}">
+  <div class="card" th:each="c : ${clientes}">
+    <div class="top">
+      <img class="avatar"
+           th:src="${(c.fotoPerfilUrl != null && !#strings.isEmpty(c.fotoPerfilUrl)) ? c.fotoPerfilUrl : 'https://via.placeholder.com/200'}"
+           alt="Foto de perfil"/>
+      <div>
+        <div class="name" th:text="${c.nombre + ' ' + c.apellido}">Nombre Apellido</div>
+        <div class="meta">
+          <span th:text="${c.edad}">0</span> años
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

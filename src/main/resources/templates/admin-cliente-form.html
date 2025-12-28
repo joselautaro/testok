@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8" />
+  <title th:text="${modo} == 'editar' ? 'Editar cliente' : 'Nuevo cliente'">Cliente</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      max-width: 720px;
+    }
+
+    .card {
+      border: 1px solid #ddd;
+      padding: 18px;
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: #111;
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #111;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .preview {
+      margin-top: 12px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid #ddd;
+      background: #eee;
+    }
+
+    small {
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1 th:text="${modo} == 'editar' ? 'Editar cliente' : 'Nuevo cliente'">Cliente</h1>
+
+  <div class="card">
+    <form th:object="${cliente}" method="post"
+      th:action="${modo} == 'editar' ? @{'/admin/clientes/' + ${cliente.id}} : @{/admin/clientes}">
+
+      <label>Nombre</label>
+      <input type="text" th:field="*{nombre}" required />
+
+      <label>Apellido</label>
+      <input type="text" th:field="*{apellido}" required />
+
+      <label>Edad</label>
+      <input type="number" min="0" max="120" th:field="*{edad}" required />
+
+      <label>Desempeño (1-10)</label>
+      <input type="number" min="1" max="10" th:field="*{desempeno}" required />
+
+      <label>Reputación laboral (1-10)</label>
+      <input type="number" min="1" max="10" th:field="*{reputacionLaboral}" required />
+
+      <label>Cumplimiento (1-10)</label>
+      <input type="number" min="1" max="10" th:field="*{cumplimiento}" required />
+
+      <label>Habilidades blandas (1-10)</label>
+      <input type="number" min="1" max="10" th:field="*{habilidadesBlandas}" required />
+
+      <label>Historial</label>
+      <textarea th:field="*{historial}" rows="4"
+        style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;"></textarea>
+
+      <label>Valoraciones generales</label>
+      <textarea th:field="*{valoracionesGenerales}" rows="4"
+        style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;"></textarea>
+
+      <label>Foto de perfil (URL)</label>
+      <input type="text" th:field="*{fotoPerfilUrl}" placeholder="https://..." />
+      <small>Pegá una URL de imagen. Más adelante lo hacemos con upload real.</small>
+
+      <div class="preview">
+        <img class="avatar"
+          th:src="${(cliente.fotoPerfilUrl != null && !#strings.isEmpty(cliente.fotoPerfilUrl)) ? cliente.fotoPerfilUrl : 'https://via.placeholder.com/200'}"
+          alt="preview" />
+        <div>
+          <div><b>Vista previa</b></div>
+          <small>Se verá así en el listado público.</small>
+        </div>
+      </div>
+
+      <div class="row">
+        <button class="btn btn-primary" type="submit"
+          th:text="${modo} == 'editar' ? 'Actualizar' : 'Guardar'">Guardar</button>
+        <a class="btn btn-secondary" th:href="@{/admin/clientes}">Volver</a>
+      </div>
+    </form>
+  </div>
+
+</body>
+
+</html>

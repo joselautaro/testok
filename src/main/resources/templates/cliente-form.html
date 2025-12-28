@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title th:text="${modo} == 'editar' ? 'Editar cliente' : 'Nuevo cliente'">Cliente</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; max-width: 700px; }
+        .card { border:1px solid #ddd; padding: 18px; border-radius: 12px; }
+        label { display:block; margin-top: 12px; }
+        input { width: 100%; padding: 10px; margin-top: 6px; border-radius: 8px; border:1px solid #ccc; }
+        .row { display:flex; gap: 10px; margin-top: 16px; }
+        .btn { padding:10px 14px; border-radius:8px; border:none; cursor:pointer; }
+        .btn-primary { background:#111; color:#fff; }
+        .btn-secondary { background:#f0f0f0; color:#111; text-decoration:none; display:inline-flex; align-items:center; }
+        .err { padding:10px; background:#ffecec; border:1px solid #ffb3b3; margin-bottom: 12px; border-radius:8px; }
+        small { color:#666; }
+    </style>
+</head>
+<body>
+
+<h1 th:text="${modo} == 'editar' ? 'Editar cliente' : 'Nuevo cliente'">Cliente</h1>
+
+<div class="err" th:if="${error}" th:text="${error}"></div>
+
+<div class="card">
+    <form th:object="${cliente}" method="post"
+          th:action="${modo} == 'editar' ? @{'/clientes/' + ${cliente.id}} : @{/clientes}">
+
+        <label>Nombre</label>
+        <input type="text" th:field="*{nombre}" placeholder="Ej: Juan Pérez" required />
+
+        <label>Email</label>
+        <input type="email" th:field="*{email}" placeholder="Ej: juan@mail.com" required />
+        <small th:if="${modo} == 'editar'">Si cambiás el email, no puede repetirse con otro cliente.</small>
+
+        <div class="row">
+            <button class="btn btn-primary" type="submit"
+                    th:text="${modo} == 'editar' ? 'Actualizar' : 'Guardar'">Guardar</button>
+
+            <a class="btn btn-secondary" th:href="@{/clientes}">Volver</a>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

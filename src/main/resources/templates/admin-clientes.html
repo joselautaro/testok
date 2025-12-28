@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin - Clientes</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 30px; background:#f6f7f9; }
+    .top { display:flex; justify-content: space-between; align-items:center; gap: 12px; }
+    .btn { padding:10px 14px; background:#111; color:#fff; text-decoration:none; border-radius:8px; display:inline-block; }
+    .msg-ok { padding:10px; background:#e8ffe8; border:1px solid #b6ffb6; margin-top: 12px; border-radius:8px; }
+    .msg-err { padding:10px; background:#ffecec; border:1px solid #ffb3b3; margin-top: 12px; border-radius:8px; }
+
+    /* Layout: cards + panel detalle */
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    /* Grid cards: 4 desktop, 3 tablet, 2 mobile */
+    .grid{
+      display: grid;
+      gap: 16px;
+
+      /* Desktop / default: 4 por fila */
+      grid-template-columns: repeat(4, 1fr);
+    }
+    @media (max-width: 1100px){
+      .grid{ grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 700px){
+      .grid{ grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* Card */
+    .card { background:#fff; border:1px solid #e6e6e6; border-radius: 14px; padding: 14px; box-shadow: 0 6px 18px rgba(0,0,0,.06); }
+    .card-link { text-decoration: none; color: inherit; display:block; }
+    .card-link:hover { transform: translateY(-1px); transition: .15s; }
+
+    .row { display:flex; align-items:center; gap: 12px; }
+    .avatar { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border:1px solid #ddd; background:#eee; flex: 0 0 auto; }
+    .name { font-weight: 800; font-size: 16px; line-height: 1.2; }
+    .meta { color:#666; font-size: 14px; margin-top: 2px; }
+
+    /* Acciones dentro de la card */
+    .actions { display:flex; gap: 10px; margin-top: 12px; align-items:center; flex-wrap: wrap; }
+    .link { text-decoration:none; padding:8px 12px; border-radius:8px; display:inline-block; border:1px solid #ddd; background:#f0f0f0; color:#111; cursor:pointer; }
+    .del { background:#ffecec; border:1px solid #ffb3b3; color:#a40000; cursor:pointer; }
+    form { margin:0; }
+
+    /* Etiqueta "Solo lectura" */
+    .readonly {
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid #ddd;
+      background:#fafafa;
+      color:#666;
+      font-size: 12px;
+    }
+
+    /* Panel detalle */
+    .panel {
+      background:#fff;
+      border:1px solid #e6e6e6;
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 6px 18px rgba(0,0,0,.06);
+      position: sticky;
+      top: 16px;
+      height: fit-content;
+    }
+    .panel h2 { margin: 0 0 8px 0; }
+    .sep { height:1px; background:#eee; margin: 12px 0; }
+    .badge {
+      display:inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border:1px solid #ddd;
+      background:#f5f5f5;
+      font-size: 12px;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+    .close {
+      display:inline-block;
+      padding:8px 12px;
+      border-radius:8px;
+      background:#111;
+      color:#fff;
+      text-decoration:none;
+    }
+    .close.secondary{
+      background:#f0f0f0;
+      color:#111;
+      border:1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+
+<div class="top">
+  <h1>Panel Admin - Clientes</h1>
+  <div style="display:flex; gap:10px; align-items:center;">
+    <a class="btn" th:href="@{/admin/usuarios}">Ver usuarios administradores</a>
+    <a class="btn" th:href="@{/admin/clientes/nuevo}">Agregar nuevo empleado</a>
+    <a class="btn" th:href="@{/logout}">Salir</a>
+  </div>
+</div>
+
+<div class="msg-ok" th:if="${ok}" th:text="${ok}"></div>
+<div class="msg-err" th:if="${err}" th:text="${err}"></div>
+
+<div th:if="${#lists.isEmpty(clientes)}" class="msg-err">
+  No hay clientes todavía.
+</div>
+
+<div class="layout" th:if="${!#lists.isEmpty(clientes)}">
+
+  <!-- IZQUIERDA: CARDS (clic abre detalle con ?ver=ID) -->
+  <div class="grid">
+    <a class="card card-link" th:each="c : ${clientes}" th:href="@{/admin/clientes(ver=${c.id})}">
+      <div class="row">
+        <img class="avatar"
+             th:src="${(c.fotoPerfilUrl != null && !#strings.isEmpty(c.fotoPerfilUrl)) ? c.fotoPerfilUrl : 'https://via.placeholder.com/200'}"
+             alt="Foto de perfil" />
+        <div>
+          <div class="name" th:text="${c.nombre + ' ' + c.apellido}">Nombre Apellido</div>
+          <div class="meta"><span th:text="${c.edad}">0</span> años</div>
+        </div>
+      </div>
+
+      <!-- Acciones: solo si es del admin logueado -->
+      <div class="actions">
+
+        <!-- ✅ si es propio -->
+        <div th:if="${c.createdBy != null && c.createdBy.username == usernameLogueado}" style="display:flex; gap:10px; align-items:center;">
+          <span class="link"
+                th:attr="data-href=@{'/admin/clientes/' + ${c.id} + '/editar'}"
+                onclick="event.preventDefault(); event.stopPropagation(); window.location=this.getAttribute('data-href');">
+            Editar
+          </span>
+
+          <form th:action="@{'/admin/clientes/' + ${c.id} + '/eliminar'}" method="post"
+                onsubmit="event.stopPropagation(); return confirm('¿Seguro que querés eliminar este cliente?');">
+            <button class="link del" type="submit">Eliminar</button>
+          </form>
+        </div>
+
+        <!-- ✅ si NO es propio -->
+        <span class="readonly" th:if="${c.createdBy == null || c.createdBy.username != usernameLogueado}">
+          Solo lectura
+        </span>
+
+      </div>
+    </a>
+  </div>
+
+  <!-- DERECHA: PANEL DETALLE -->
+  <div class="panel" th:if="${seleccionado != null}">
+    <div class="row">
+      <img class="avatar"
+           th:src="${(seleccionado.fotoPerfilUrl != null && !#strings.isEmpty(seleccionado.fotoPerfilUrl)) ? seleccionado.fotoPerfilUrl : 'https://via.placeholder.com/200'}"
+           alt="Foto de perfil" />
+      <div>
+        <h2 th:text="${seleccionado.nombre + ' ' + seleccionado.apellido}">Nombre Apellido</h2>
+        <div class="meta"><span th:text="${seleccionado.edad}">0</span> años</div>
+
+        <!-- dueñ@ del registro (opcional, pero útil) -->
+        <!-- <div class="meta" th:if="${seleccionado.createdBy != null}">
+          Creado por: <b th:text="${seleccionado.createdBy.username}">admin</b>
+        </div> -->
+
+        <div style="margin-top:8px;">
+          <span class="readonly"
+                th:if="${seleccionado.createdBy == null || seleccionado.createdBy.username != usernameLogueado}">
+            Solo lectura
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sep"></div>
+
+    <div>
+      <span class="badge">Desempeño: <b th:text="${seleccionado.desempeno}">0</b>/10</span>
+      <span class="badge">Reputación: <b th:text="${seleccionado.reputacionLaboral}">0</b>/10</span>
+      <span class="badge">Cumplimiento: <b th:text="${seleccionado.cumplimiento}">0</b>/10</span>
+      <span class="badge">H. blandas: <b th:text="${seleccionado.habilidadesBlandas}">0</b>/10</span>
+    </div>
+
+    <div class="sep"></div>
+
+    <div>
+      <h3 style="margin:0 0 6px 0;">Historial</h3>
+      <div class="meta" th:text="${seleccionado.historial != null ? seleccionado.historial : '—'}">—</div>
+    </div>
+
+    <div class="sep"></div>
+
+    <div>
+      <h3 style="margin:0 0 6px 0;">Valoraciones generales</h3>
+      <div class="meta" th:text="${seleccionado.valoracionesGenerales != null ? seleccionado.valoracionesGenerales : '—'}">—</div>
+    </div>
+
+    <div class="sep"></div>
+
+    <a class="close" th:href="@{/admin/clientes}">Cerrar detalle</a>
+
+    <!-- ✅ Botón Editar solo si es propio -->
+    <a class="close secondary"
+       th:if="${seleccionado.createdBy != null && seleccionado.createdBy.username == usernameLogueado}"
+       th:href="@{'/admin/clientes/' + ${seleccionado.id} + '/editar'}"
+       style="margin-left:8px;">
+      Editar
+    </a>
+  </div>
+
+  <!-- Si no hay seleccionado, mostramos un panel “vacío” -->
+  <div class="panel" th:if="${seleccionado == null}">
+    <h2 style="margin:0 0 8px 0;">Detalle</h2>
+    <div class="meta">Hacé click en una card para ver la información completa.</div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Nuevo usuario</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 30px; max-width: 700px; }
+    .card { border:1px solid #ddd; padding: 18px; border-radius: 12px; background:#fff; }
+    label { display:block; margin-top: 12px; font-weight: 700; }
+    input, select { width: 100%; padding: 10px; margin-top: 6px; border-radius: 8px; border:1px solid #ccc; }
+    .row { display:flex; gap: 10px; margin-top: 16px; }
+    .btn { padding:10px 14px; border-radius:8px; border:none; cursor:pointer; }
+    .btn-primary { background:#111; color:#fff; }
+    .btn-secondary { background:#f0f0f0; color:#111; text-decoration:none; display:inline-flex; align-items:center; border:1px solid #ddd; }
+    .msg-err { padding:10px; background:#ffecec; border:1px solid #ffb3b3; margin-bottom: 12px; border-radius:8px; }
+    small { color:#666; }
+  </style>
+</head>
+<body>
+
+<h1>Nuevo usuario</h1>
+
+<div class="msg-err" th:if="${param.err}" th:text="${param.err}"></div>
+
+<div class="card">
+  <form th:action="@{/admin/usuarios}" method="post">
+    <label>Username</label>
+    <input type="text" name="username" placeholder="ej: admin2" required />
+
+    <label>Contraseña</label>
+    <input type="password" name="password" placeholder="mínimo 4 caracteres" required />
+
+    <label>Rol</label>
+    <select name="rol" required>
+      <option th:each="r : ${roles}" th:value="${r}" th:text="${r}">ADMIN</option>
+    </select>
+
+    <small>Si elegís ADMIN, ese usuario podrá agregar/editar/eliminar empleados y administrar usuarios.</small>
+
+    <div class="row">
+      <button class="btn btn-primary" type="submit">Crear</button>
+      <a class="btn btn-secondary" th:href="@{/admin/usuarios}">Volver</a>
+    </div>
+  </form>
+</div>
+
+</body>
+</html>

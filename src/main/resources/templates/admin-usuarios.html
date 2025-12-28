@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin - Usuarios</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 30px; background:#f6f7f9; }
+    .top { display:flex; justify-content: space-between; align-items:center; gap: 12px; }
+    .btn { padding:10px 14px; background:#111; color:#fff; text-decoration:none; border-radius:8px; display:inline-block; }
+    .msg-ok { padding:10px; background:#e8ffe8; border:1px solid #b6ffb6; margin-top: 12px; border-radius:8px; }
+    .msg-err { padding:10px; background:#ffecec; border:1px solid #ffb3b3; margin-top: 12px; border-radius:8px; }
+    table { width:100%; border-collapse: collapse; margin-top: 16px; background:#fff; border-radius: 12px; overflow:hidden; }
+    th, td { padding: 12px; border-bottom: 1px solid #eee; text-align:left; }
+    th { background:#f5f5f5; }
+    .role { font-weight: 800; }
+  </style>
+</head>
+<body>
+
+<div class="top">
+  <h1>Usuarios</h1>
+  <div style="display:flex; gap:10px;">
+    <a class="btn" th:href="@{/admin/usuarios/nuevo}">+ Nuevo usuario</a>
+    <a class="btn" th:href="@{/admin/clientes}">Volver</a>
+  </div>
+</div>
+
+<div class="msg-ok" th:if="${ok}" th:text="${ok}"></div>
+<div class="msg-err" th:if="${err}" th:text="${err}"></div>
+
+<table>
+  <thead>
+  <tr>
+    <th>Username</th>
+    <th>Rol</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:if="${#lists.isEmpty(usuarios)}">
+    <td colspan="2">No hay usuarios.</td>
+  </tr>
+  <tr th:each="u : ${usuarios}">
+    <td th:text="${u.username}">user</td>
+    <td class="role" th:text="${u.rol}">ADMIN</td>
+  </tr>
+  </tbody>
+</table>
+
+</body>
+</html>
