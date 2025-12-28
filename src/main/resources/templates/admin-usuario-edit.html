@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar usuario</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 6px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+
+        small {
+            color: #666;
+        }
+
+        .actions {
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-save {
+            background-color: #198754;
+            color: white;
+        }
+
+        .btn-cancel {
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 18px;
+            border-radius: 4px;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #842029;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Editar usuario</h1>
+
+    <!-- Mensaje de error -->
+    <div th:if="${param.err}" class="error" th:text="${param.err}"></div>
+
+    <form th:action="@{/admin/usuarios/{id}/editar(id=${usuario.id})}" method="post">
+
+        <!-- USERNAME -->
+        <label for="username">Username</label>
+        <input type="text"
+               id="username"
+               name="username"
+               th:value="${usuario.username}"
+               required>
+
+        <!-- PASSWORD (opcional) -->
+        <label for="password">Nueva contraseña</label>
+        <input type="password"
+               id="password"
+               name="password"
+               placeholder="Dejar en blanco para no cambiarla">
+        <small>Si no ingresás nada, la contraseña no se modifica.</small>
+
+        <!-- ROL (solo SUPERADMIN) -->
+        <div th:if="${esSuperAdmin}">
+            <label for="rol">Rol</label>
+            <select id="rol" name="rol">
+                <option th:each="r : ${roles}"
+                        th:value="${r}"
+                        th:text="${r}"
+                        th:selected="${r == usuario.rol}">
+                </option>
+            </select>
+        </div>
+
+        <!-- BOTONES -->
+        <div class="actions">
+            <a th:href="@{/admin/usuarios}" class="btn-cancel">Cancelar</a>
+            <button type="submit" class="btn-save">Guardar cambios</button>
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+</html>

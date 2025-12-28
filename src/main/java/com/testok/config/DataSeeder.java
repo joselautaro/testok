@@ -15,11 +15,32 @@ public class DataSeeder {
     @Bean
     CommandLineRunner initUsers(UsuarioRepository repo, PasswordEncoder encoder) {
         return args -> {
-            if (!repo.existsByUsername("admin")) {
-                repo.save(new Usuario("admin", encoder.encode("admin123"), Rol.ADMIN));
+
+            // ✅ SUPERADMIN (sin guion bajo)
+            if (!repo.existsByUsername("superadmin")) {
+                Usuario sa = new Usuario();
+                sa.setUsername("superadmin");
+                sa.setPassword(encoder.encode("superadmin123"));
+                sa.setRol(Rol.SUPERADMIN);
+                repo.save(sa);
             }
+
+            // ✅ ADMIN
+            if (!repo.existsByUsername("admin")) {
+                Usuario admin = new Usuario();
+                admin.setUsername("admin");
+                admin.setPassword(encoder.encode("admin123"));
+                admin.setRol(Rol.ADMIN);
+                repo.save(admin);
+            }
+
+            // ✅ USER
             if (!repo.existsByUsername("user")) {
-                repo.save(new Usuario("user", encoder.encode("user123"), Rol.USER));
+                Usuario user = new Usuario();
+                user.setUsername("user");
+                user.setPassword(encoder.encode("user123"));
+                user.setRol(Rol.USER);
+                repo.save(user);
             }
         };
     }
