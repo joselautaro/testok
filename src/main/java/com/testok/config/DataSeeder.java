@@ -1,12 +1,13 @@
 package com.testok.config;
 
-import com.testok.entities.Rol;
-import com.testok.entities.Usuario;
-import com.testok.repositories.UsuarioRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.testok.entities.Rol;
+import com.testok.entities.Usuario;
+import com.testok.repositories.UsuarioRepository;
 
 @Configuration
 public class DataSeeder {

@@ -14,13 +14,70 @@
     .btn-secondary { background:#f0f0f0; color:#111; text-decoration:none; display:inline-flex; align-items:center; border:1px solid #ddd; }
     .msg-err { padding:10px; background:#ffecec; border:1px solid #ffb3b3; margin-bottom: 12px; border-radius:8px; }
     small { color:#666; }
+    /* ===== TOASTS ===== */
+#toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.toast {
+  min-width: 260px;
+  max-width: 340px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #111;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(0,0,0,.15);
+  border-left: 6px solid;
+  animation: slideIn .3s ease, fadeOut .3s ease 2.7s forwards;
+}
+
+/* Tipos */
+.toast.success {
+  border-color: #2ecc71;
+}
+
+.toast.error {
+  border-color: #e74c3c;
+}
+
+/* Animaciones */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+}
+
   </style>
 </head>
 <body>
+  <div id="toast-container">
+  <div class="toast success" th:if="${ok}" th:text="${ok}"></div>
+  <div class="toast error" th:if="${err}" th:text="${err}"></div>
+</div>
+
 
 <h1>Nuevo usuario</h1>
 
-<div class="msg-err" th:if="${param.err}" th:text="${param.err}"></div>
+<!-- <div class="msg-err" th:if="${param.err}" th:text="${param.err}"></div> -->
 
 <div class="card">
   <form th:action="@{/admin/usuarios}" method="post">
@@ -43,6 +100,12 @@
     </div>
   </form>
 </div>
+<script>
+  // Elimina los toasts del DOM luego de 3 segundos
+  setTimeout(() => {
+    document.querySelectorAll('.toast').forEach(t => t.remove());
+  }, 3000);
+</script>
 
 </body>
 </html>

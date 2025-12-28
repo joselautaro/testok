@@ -138,6 +138,12 @@
       </div>
     </form>
   </div>
+<script>
+  // Elimina los toasts del DOM luego de 3 segundos
+  setTimeout(() => {
+    document.querySelectorAll('.toast').forEach(t => t.remove());
+  }, 3000);
+</script>
 
 </body>
 
