@@ -1,111 +1,457 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <meta charset="UTF-8" />
-  <title>Nuevo usuario</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nuevo usuario | Testok</title>
+
+  <!-- Tipografías (mismo sistema visual) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@500;600;700&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet">
+
   <style>
-    body { font-family: Arial, sans-serif; margin: 30px; max-width: 700px; }
-    .card { border:1px solid #ddd; padding: 18px; border-radius: 12px; background:#fff; }
-    label { display:block; margin-top: 12px; font-weight: 700; }
-    input, select { width: 100%; padding: 10px; margin-top: 6px; border-radius: 8px; border:1px solid #ccc; }
-    .row { display:flex; gap: 10px; margin-top: 16px; }
-    .btn { padding:10px 14px; border-radius:8px; border:none; cursor:pointer; }
-    .btn-primary { background:#111; color:#fff; }
-    .btn-secondary { background:#f0f0f0; color:#111; text-decoration:none; display:inline-flex; align-items:center; border:1px solid #ddd; }
-    .msg-err { padding:10px; background:#ffecec; border:1px solid #ffb3b3; margin-bottom: 12px; border-radius:8px; }
-    small { color:#666; }
-    /* ===== TOASTS ===== */
-#toast-container {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+    :root{
+      --primary:#084391;
+      --secondary:#0dffdc;
 
-.toast {
-  min-width: 260px;
-  max-width: 340px;
-  padding: 14px 18px;
-  border-radius: 12px;
-  font-size: 14px;
-  color: #111;
-  background: #fff;
-  box-shadow: 0 10px 30px rgba(0,0,0,.15);
-  border-left: 6px solid;
-  animation: slideIn .3s ease, fadeOut .3s ease 2.7s forwards;
-}
+      --ink:#0b0f19;
+      --muted:#4b5b73;
 
-/* Tipos */
-.toast.success {
-  border-color: #2ecc71;
-}
+      --bg-1:#f4f8ff;
 
-.toast.error {
-  border-color: #e74c3c;
-}
+      --card:#ffffff;
+      --shadow:0 14px 40px rgba(8,67,145,.18);
+      --shadow-soft:0 8px 24px rgba(8,67,145,.12);
+      --radius:18px;
 
-/* Animaciones */
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
+      --danger:#b00020;
+      --danger-bg:#ffecec;
 
-@keyframes fadeOut {
-  to {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-}
+      --ok-bg:rgba(13,255,220,.18);
+    }
 
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      background:
+        radial-gradient(900px 420px at 80% 10%, rgba(13,255,220,.16), transparent 60%),
+        linear-gradient(180deg, var(--bg-1) 0%, #ffffff 42%);
+      color:var(--ink);
+      font-family: Roboto, system-ui, -apple-system, Segoe UI, sans-serif;
+    }
+
+    .page{ min-height:100vh; display:flex; flex-direction:column; }
+
+    /* ================= HEADER: arriba solo logo ================= */
+    .hero{
+      background: linear-gradient(90deg, #06336d, var(--primary));
+      color:#fff;
+      padding: 16px 18px 0;
+    }
+
+    .hero-top{
+      max-width:1100px;
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:flex-start;
+      padding-bottom:14px;
+      gap:14px;
+    }
+
+    .logo-pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding: 10px 14px;
+    }
+
+    .logo-img{
+      height:34px;
+      width:auto;
+      max-width:220px;
+      display:block;
+      object-fit:contain;
+    }
+
+    .brand-tag{
+      font-size: 12px;
+      color: rgba(230,241,255,.92);
+      line-height: 1.2;
+      max-width: 320px;
+    }
+
+    /* ================= NAV: abajo ================= */
+    .nav{
+      border-top: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.06);
+    }
+
+    .nav-inner{
+      max-width:1100px;
+      margin:0 auto;
+      padding: 12px 18px 14px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:18px;
+    }
+
+    .nav-left{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-width:320px;
+    }
+
+    .kicker{
+      font-family:"Josefin Sans", sans-serif;
+      font-size:18px;
+      font-weight:700;
+      text-transform:uppercase;
+      padding:8px 12px;
+      background: var(--secondary);
+      color:#002a3a;
+      border-radius:10px;
+      display:inline-block;
+      width: fit-content;
+    }
+
+    .subtitle{
+      margin:0;
+      font-size:13px;
+      line-height:1.45;
+      color:#e6f1ff;
+      max-width:56ch;
+    }
+
+    .nav-actions{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .btn{
+      padding: 11px 16px;
+      border-radius: 12px;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:600;
+      font-size:13px;
+      border:1px solid transparent;
+      cursor:pointer;
+      transition: filter .15s ease, transform .06s ease, background .15s ease;
+      font-family: Roboto, sans-serif;
+      user-select:none;
+      white-space: nowrap;
+    }
+
+    .btn-light{
+      background:#fff;
+      color: var(--primary);
+      border-color: rgba(255,255,255,.6);
+      box-shadow: 0 10px 22px rgba(6,26,51,.12);
+    }
+    .btn-light:hover{ filter:brightness(.98); }
+
+    .btn-ghost{
+      background: rgba(255,255,255,.10);
+      color:#fff;
+      border-color: rgba(255,255,255,.22);
+    }
+    .btn-ghost:hover{ background: rgba(255,255,255,.14); }
+
+    .btn:active{ transform: translateY(1px); }
+
+    @media (max-width: 900px){
+      .nav-inner{ flex-direction:column; align-items:flex-start; }
+      .nav-actions{ width:100%; justify-content:flex-start; }
+      .nav-left{ min-width:0; }
+      .brand-tag{ max-width: 100%; }
+    }
+
+    @media (max-width: 520px){
+      .logo-img{ height:30px; max-width:190px; }
+      .logo-pill{ padding:9px 12px; border-radius:14px; }
+    }
+
+    /* ================= CONTENT ================= */
+    .container{
+      width:100%;
+      max-width:1100px;
+      margin: 20px auto 40px;
+      padding: 0 18px;
+    }
+
+    .form-shell{
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .card{
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid rgba(8,67,145,.10);
+      box-shadow: var(--shadow-soft);
+      padding: 18px;
+    }
+
+    .card-title{
+      margin: 0 0 12px 0;
+      font-family:"Josefin Sans", sans-serif;
+      font-weight:700;
+      font-size: 18px;
+      letter-spacing:.2px;
+      color:#0b2447;
+    }
+
+    .hint{
+      margin: 0 0 16px 0;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .alert{
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid transparent;
+      box-shadow: var(--shadow-soft);
+      background: #fff;
+      font-size: 13px;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+
+    .alert-err{
+      background: var(--danger-bg);
+      border-color: rgba(176,0,32,.22);
+      color: #6f0013;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      margin-top: 12px;
+    }
+
+    label{
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+      color: #0b2447;
+      font-family: Roboto, sans-serif;
+    }
+
+    input, select{
+      width:100%;
+      height: 44px;
+      border-radius: 12px;
+      border: 1px solid rgba(8,67,145,.18);
+      padding: 0 12px;
+      font-size: 14px;
+      font-family: Roboto, sans-serif;
+      background: #fff;
+      color: var(--ink);
+      transition: box-shadow .15s ease, border-color .15s ease;
+    }
+
+    input::placeholder{ color: rgba(75,91,115,.75); }
+
+    input:focus, select:focus{
+      outline:none;
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 3px rgba(13,255,220,.25);
+    }
+
+    .small{
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .actions{
+      margin-top: 16px;
+      display:flex;
+      gap: 10px;
+      justify-content:flex-end;
+      flex-wrap: wrap;
+    }
+
+    .chip{
+      text-decoration:none;
+      padding: 11px 16px;
+      border-radius: 12px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border: 1px solid rgba(8,67,145,.14);
+      background: rgba(8,67,145,.06);
+      color: var(--primary);
+      cursor:pointer;
+      font-weight:700;
+      font-size: 13px;
+      transition: filter .15s ease, transform .06s ease, background .15s ease;
+      user-select:none;
+      white-space: nowrap;
+      font-family: Roboto, sans-serif;
+    }
+
+    .chip:hover{ filter:brightness(1.03); }
+    .chip:active{ transform: translateY(1px); }
+
+    .chip-primary{
+      background: var(--primary);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(6,26,51,.14);
+    }
+
+    .chip-primary:hover{ filter: brightness(1.06); }
+
+    /* ===== Toasts ===== */
+    #toast-container{
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display:flex;
+      flex-direction:column;
+      gap: 12px;
+    }
+
+    .toast{
+      min-width: 260px;
+      max-width: 360px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      font-size: 13px;
+      color: var(--ink);
+      background:#fff;
+      box-shadow: var(--shadow);
+      border-left: 6px solid;
+      animation: slideIn .3s ease, fadeOut .3s ease 2.7s forwards;
+    }
+
+    .toast.success{ border-color: var(--secondary); }
+    .toast.error{ border-color: rgba(176,0,32,.75); }
+
+    @keyframes slideIn{
+      from{ opacity:0; transform: translateX(18px); }
+      to{ opacity:1; transform: translateX(0); }
+    }
+
+    @keyframes fadeOut{
+      to{ opacity:0; transform: translateX(18px); }
+    }
+
+    footer{
+      margin-top:auto;
+      text-align:center;
+      font-size:12px;
+      color:#5a6a82;
+      padding: 16px;
+      font-family: Roboto, sans-serif;
+    }
   </style>
 </head>
+
 <body>
-  <div id="toast-container">
-  <div class="toast success" th:if="${ok}" th:text="${ok}"></div>
-  <div class="toast error" th:if="${err}" th:text="${err}"></div>
-</div>
+  <div class="page">
 
+    <!-- HEADER -->
+    <header class="hero">
+      <div class="hero-top">
+        <span class="logo-pill" aria-hidden="true">
+          <img class="logo-img" th:src="@{/image/testok-logo.png}" alt="Testok" />
+        </span>
+        <div class="brand-tag">Encontrá el perfil, detrás del perfil.</div>
+      </div>
 
-<h1>Nuevo usuario</h1>
+      <!-- NAV -->
+      <div class="nav">
+        <div class="nav-inner">
+          <div class="nav-left">
+            <span class="kicker">Nueva empresa</span>
+            <p class="subtitle">Creación de empresa administradora / cliente con rol asignado.</p>
+          </div>
 
-<!-- <div class="msg-err" th:if="${param.err}" th:text="${param.err}"></div> -->
+          <div class="nav-actions">
+            <a class="btn btn-ghost" th:href="@{/admin/usuarios}">Volver</a>
+          </div>
+        </div>
+      </div>
+    </header>
 
-<div class="card">
-  <form th:action="@{/admin/usuarios}" method="post">
-    <label>Username</label>
-    <input type="text" name="username" placeholder="ej: admin2" required />
-
-    <label>Contraseña</label>
-    <input type="password" name="password" placeholder="mínimo 4 caracteres" required />
-
-    <label>Rol</label>
-    <select name="rol" required>
-      <option th:each="r : ${roles}" th:value="${r}" th:text="${r}">ADMIN</option>
-    </select>
-
-    <small>Si elegís ADMIN, ese usuario podrá agregar/editar/eliminar empleados y administrar usuarios.</small>
-
-    <div class="row">
-      <button class="btn btn-primary" type="submit">Crear</button>
-      <a class="btn btn-secondary" th:href="@{/admin/usuarios}">Volver</a>
+    <!-- Toasts -->
+    <div id="toast-container">
+      <div class="toast success" th:if="${ok}" th:text="${ok}"></div>
+      <div class="toast error" th:if="${err}" th:text="${err}"></div>
     </div>
-  </form>
-</div>
-<script>
-  // Elimina los toasts del DOM luego de 3 segundos
-  setTimeout(() => {
-    document.querySelectorAll('.toast').forEach(t => t.remove());
-  }, 3000);
-</script>
 
+    <!-- CONTENT -->
+    <main class="container">
+      <div class="form-shell">
+        <section class="card" aria-label="Formulario nuevo usuario">
+          <h1 class="card-title">Datos del nuevo usuario</h1>
+          <p class="hint">Completá los campos y elegí el rol. Luego creá el usuario.</p>
+
+          <!-- Si querés reactivar un error por param, descomentá:
+          <div class="alert alert-err" th:if="${param.err}" th:text="${param.err}"></div>
+          -->
+
+          <form th:action="@{/admin/usuarios}" method="post" autocomplete="on">
+
+            <div class="field">
+              <label for="username">Nombre de la empresa</label>
+              <input id="username" type="text" name="username" placeholder="ej: admin2" required autocomplete="username" />
+            </div>
+
+            <div class="field">
+              <label for="password">Contraseña</label>
+              <input id="password" type="password" name="password" placeholder="mínimo 4 caracteres" required autocomplete="new-password" />
+            </div>
+
+            <div class="field">
+              <label for="rol">Rol</label>
+              <select id="rol" name="rol" required>
+                <option th:each="r : ${roles}" th:value="${r}" th:text="${r}">ADMIN</option>
+              </select>
+              <div class="small">
+                Si elegís <b>ADMIN</b>, ese usuario podrá agregar/editar/eliminar empleados y administrar usuarios.
+              </div>
+            </div>
+
+            <div class="actions">
+              <a class="chip" th:href="@{/admin/usuarios}">Volver</a>
+              <button class="chip chip-primary" type="submit">Crear</button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      © <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2025</span> Testok Argentina
+    </footer>
+  </div>
+
+  <script>
+    setTimeout(() => {
+      document.querySelectorAll('.toast').forEach(t => t.remove());
+    }, 3000);
+  </script>
 </body>
 </html>

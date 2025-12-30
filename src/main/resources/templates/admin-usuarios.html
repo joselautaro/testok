@@ -1,140 +1,562 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org"
-xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <meta charset="UTF-8" />
-  <title>Admin - Usuarios</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Usuarios | Testok</title>
+
+  <!-- Tipografías (mismo sistema visual) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@500;600;700&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet">
+
   <style>
-    body { font-family: Arial, sans-serif; margin: 30px; background:#f6f7f9; }
-    .top { display:flex; justify-content: space-between; align-items:center; gap: 12px; }
-    .btn { padding:10px 14px; background:#111; color:#fff; text-decoration:none; border-radius:8px; display:inline-block; }
-    table { width:100%; border-collapse: collapse; margin-top: 16px; background:#fff; border-radius: 12px; overflow:hidden; }
-    th, td { padding: 12px; border-bottom: 1px solid #eee; text-align:left; vertical-align: middle; }
-    th { background:#f5f5f5; }
-    .role { font-weight: 800; }
+    :root{
+      --primary:#084391;
+      --secondary:#0dffdc;
 
-    .actions { display:flex; gap:10px; flex-wrap: wrap; }
-    .btn-sm { padding:8px 10px; border-radius:8px; text-decoration:none; display:inline-block; font-size: 14px; }
+      --ink:#0b0f19;
+      --muted:#4b5b73;
 
-    .btn-edit { background:#0d6efd; color:#fff; }
-    .btn-del  { background:#dc3545; color:#fff; border:none; cursor:pointer; }
+      --bg-1:#f4f8ff;
 
-    #toast-container {
+      --card:#ffffff;
+      --shadow:0 14px 40px rgba(8,67,145,.18);
+      --shadow-soft:0 8px 24px rgba(8,67,145,.12);
+      --radius:18px;
+
+      --danger:#b00020;
+      --danger-bg:#ffecec;
+
+      --ok-bg:rgba(13,255,220,.18);
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      min-height:100vh;
+      background:
+        radial-gradient(900px 420px at 80% 10%, rgba(13,255,220,.16), transparent 60%),
+        linear-gradient(180deg, var(--bg-1) 0%, #ffffff 42%);
+      color:var(--ink);
+      font-family: Roboto, system-ui, -apple-system, Segoe UI, sans-serif;
+    }
+
+    .page{ min-height:100vh; display:flex; flex-direction:column; }
+
+    /* ================= HEADER (arriba solo logo) ================= */
+    .hero{
+      background: linear-gradient(90deg, #06336d, var(--primary));
+      color:#fff;
+      padding: 16px 18px 0;
+    }
+
+    .hero-top{
+      max-width:1100px;
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:flex-start;
+      padding-bottom:14px;
+    }
+
+    .logo-pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding: 10px 14px;
+    }
+
+    .logo-img{
+      height:34px;
+      width:auto;
+      max-width:220px;
+      display:block;
+      object-fit:contain;
+    }
+
+    /* ================= NAV ABAJO ================= */
+    .nav{
+      border-top: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.06);
+    }
+
+    .nav-inner{
+      max-width:1100px;
+      margin:0 auto;
+      padding: 12px 18px 14px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:18px;
+    }
+
+    .nav-left{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-width: 320px;
+    }
+
+    .brand-tag{
+      font-size: 12px;
+      color: rgba(230,241,255,.92);
+      line-height: 1.2;
+      max-width: 260px;
+    }
+
+    .kicker{
+      font-family:"Josefin Sans", sans-serif;
+      font-size:18px;
+      font-weight:700;
+      text-transform:uppercase;
+      padding:8px 12px;
+      background: var(--secondary);
+      color:#002a3a;
+      border-radius:10px;
+      display:inline-block;
+      width: fit-content;
+    }
+
+    .subtitle{
+      margin:0;
+      font-size:13px;
+      line-height:1.45;
+      color:#e6f1ff;
+      max-width:56ch;
+    }
+
+    .nav-actions{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .btn{
+      padding: 11px 16px;
+      border-radius: 12px;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:600;
+      font-size:13px;
+      border:1px solid transparent;
+      cursor:pointer;
+      transition: filter .15s ease, transform .06s ease, background .15s ease;
+      font-family: Roboto, sans-serif;
+      user-select:none;
+      white-space: nowrap;
+    }
+
+    .btn-light{
+      background:#fff;
+      color: var(--primary);
+      border-color: rgba(255,255,255,.6);
+      box-shadow: 0 10px 22px rgba(6,26,51,.12);
+    }
+    .btn-light:hover{ filter:brightness(.98); }
+
+    .btn-ghost{
+      background: rgba(255,255,255,.10);
+      color:#fff;
+      border-color: rgba(255,255,255,.22);
+    }
+    .btn-ghost:hover{ background: rgba(255,255,255,.14); }
+
+    .btn:active{ transform: translateY(1px); }
+
+    @media (max-width: 900px){
+      .nav-inner{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      .nav-actions{
+        width:100%;
+        justify-content:flex-start;
+      }
+      .nav-left{ min-width:0; }
+    }
+
+    @media (max-width: 520px){
+      .logo-img{ height:30px; max-width:190px; }
+      .logo-pill{ padding:9px 12px; border-radius:14px; }
+    }
+
+    /* ================= CONTENT ================= */
+    .container{
+      width:100%;
+      max-width:1100px;
+      margin: 20px auto 40px;
+      padding: 0 18px;
+    }
+
+    .card{
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid rgba(8,67,145,.10);
+      box-shadow: var(--shadow-soft);
+      overflow:hidden;
+    }
+
+    /* Tabla “premium” */
+    .table-wrap{
+      overflow:auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table{
+      width:100%;
+      border-collapse: collapse;
+      min-width: 720px;
+    }
+
+    thead th{
+      background: rgba(8,67,145,.06);
+      color:#0b2447;
+      font-size:12px;
+      letter-spacing:.3px;
+      text-transform:uppercase;
+      font-family: Roboto, sans-serif;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(8,67,145,.10);
+      white-space: nowrap;
+    }
+
+    tbody td{
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(8,67,145,.08);
+      vertical-align: middle;
+      font-size: 13px;
+      color: #0b0f19;
+    }
+
+    tbody tr:hover td{
+      background: rgba(13,255,220,.06);
+    }
+
+    .role{
+      font-family:"Josefin Sans", sans-serif;
+      font-weight:700;
+      letter-spacing:.2px;
+      color: var(--primary);
+      white-space: nowrap;
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-start;
+      align-items:center;
+    }
+
+    .chip{
+      text-decoration:none;
+      padding: 8px 12px;
+      border-radius: 12px;
+      display:inline-flex;
+      align-items:center;
+      border: 1px solid rgba(8,67,145,.14);
+      background: rgba(8,67,145,.06);
+      color: var(--primary);
+      cursor:pointer;
+      font-weight:600;
+      font-size:13px;
+      transition: filter .15s ease, transform .06s ease, background .15s ease;
+      user-select:none;
+      white-space: nowrap;
+    }
+
+    .chip:hover{ filter:brightness(1.03); }
+    .chip:active{ transform: translateY(1px); }
+
+    .chip-danger{
+      background: rgba(176,0,32,.08);
+      border-color: rgba(176,0,32,.20);
+      color: var(--danger);
+    }
+
+    form{ margin:0; }
+
+    /* Mensaje vacío */
+    .empty{
+      padding: 16px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* Toast */
+    #toast-container{
       position: fixed;
       top: 20px;
       right: 20px;
       z-index: 9999;
-      display: flex;
-      flex-direction: column;
+      display:flex;
+      flex-direction:column;
       gap: 12px;
     }
 
-    .toast {
+    .toast{
       min-width: 260px;
-      max-width: 340px;
-      padding: 14px 18px;
-      border-radius: 12px;
-      font-size: 14px;
-      color: #111;
-      background: #fff;
-      box-shadow: 0 10px 30px rgba(0,0,0,.15);
+      max-width: 360px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      font-size: 13px;
+      color: var(--ink);
+      background:#fff;
+      box-shadow: var(--shadow);
       border-left: 6px solid;
       animation: slideIn .3s ease, fadeOut .3s ease 2.7s forwards;
     }
+    .toast.success{ border-color: var(--secondary); }
+    .toast.error{ border-color: rgba(176,0,32,.75); }
 
-    .toast.success { border-color: #2ecc71; }
-    .toast.error   { border-color: #e74c3c; }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(20px); }
-      to   { opacity: 1; transform: translateX(0); }
+    @keyframes slideIn{
+      from{ opacity:0; transform: translateX(18px); }
+      to{ opacity:1; transform: translateX(0); }
+    }
+    @keyframes fadeOut{
+      to{ opacity:0; transform: translateX(18px); }
     }
 
-    @keyframes fadeOut {
-      to { opacity: 0; transform: translateX(20px); }
+    /* ===== MODAL (igual que el de clientes) ===== */
+    .modal-overlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 26, 51, .55);
+      display: none; /* se abre por JS */
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      padding: 20px;
+    }
+
+    .modal{
+      width: 100%;
+      max-width: 440px;
+      background: #fff;
+      border-radius: 18px;
+      border: 1px solid rgba(8, 67, 145, .12);
+      box-shadow: 0 18px 55px rgba(6, 26, 51, .30);
+      padding: 18px;
+      animation: modalIn .18s ease;
+    }
+
+    .modal-title{
+      font-family: "Josefin Sans", sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 8px;
+      color: var(--ink);
+    }
+
+    .modal-text{
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .modal-actions{
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .modal-btn{
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(8, 67, 145, .14);
+      background: rgba(8, 67, 145, .06);
+      cursor: pointer;
+      font-weight: 700;
+      font-family: Roboto, sans-serif;
+      transition: filter .15s ease, transform .06s ease, background .15s ease;
+      white-space: nowrap;
+      color: var(--primary);
+    }
+
+    .modal-btn:hover{ filter: brightness(1.03); }
+    .modal-btn:active{ transform: translateY(1px); }
+
+    .modal-btn.danger{
+      background: rgba(176, 0, 32, .08);
+      border-color: rgba(176, 0, 32, .20);
+      color: var(--danger);
+    }
+
+    @keyframes modalIn{
+      from{ transform: translateY(8px); opacity: 0; }
+      to{ transform: translateY(0); opacity: 1; }
+    }
+
+    footer{
+      margin-top:auto;
+      text-align:center;
+      font-size:12px;
+      color:#5a6a82;
+      padding: 16px;
+      font-family: Roboto, sans-serif;
     }
   </style>
 </head>
+
 <body>
+  <div class="page">
 
-<div id="toast-container">
-  <div class="toast success" th:if="${ok}" th:text="${ok}"></div>
-  <div class="toast error" th:if="${err}" th:text="${err}"></div>
-</div>
-
-<div class="top">
-  <!-- ✅ Título distinto según rol -->
-  <h1 th:text="${esSuperAdmin} ? 'Usuarios (Admins y Clientes)' : 'Clientes'">Usuarios</h1>
-
-  <div style="display:flex; gap:10px;">
-
-    <!-- ✅ (Opcional) Botón SOLO para SUPERADMIN -->
-    <!-- Si NO lo querés, borrá este bloque -->
-    <a class="btn"
-   sec:authorize="hasRole('SUPERADMIN')"
-   th:href="@{/admin/usuarios}">
-  Ver usuarios administradores
-</a>
-
-
-
-    <!-- ✅ Recomendado: solo SUPERADMIN crea usuarios -->
-    <a class="btn"
-       th:if="${esSuperAdmin}"
-       th:href="@{/admin/usuarios/nuevo}">
-      + Nuevo usuario
-    </a>
-
-    <a class="btn" th:href="@{/admin/clientes}">Volver</a>
-  </div>
-</div>
-
-<table>
-  <thead>
-  <tr>
-    <th>Username</th>
-    <th>Rol</th>
-    <th>Acciones</th>
-  </tr>
-  </thead>
-
-  <tbody>
-  <tr th:if="${#lists.isEmpty(usuarios)}">
-    <td colspan="3">No hay usuarios.</td>
-  </tr>
-
-  <tr th:each="u : ${usuarios}">
-    <td th:text="${u.username}">user</td>
-    <td class="role" th:text="${u.rol}">ADMIN</td>
-
-    <td>
-      <div class="actions">
-
-        <a class="btn-sm btn-edit"
-           th:href="@{/admin/usuarios/{id}/editar(id=${u.id})}">
-          Editar
-        </a>
-
-        <!-- ✅ Eliminar: solo SUPERADMIN -->
-        <form th:if="${esSuperAdmin}"
-              th:action="@{/admin/usuarios/{id}/eliminar(id=${u.id})}"
-              method="post"
-              style="margin:0;"
-              onsubmit="return confirm('¿Seguro que querés eliminar este usuario?');">
-          <button type="submit" class="btn-sm btn-del">Eliminar</button>
-        </form>
-
+    <!-- HEADER: arriba solo logo -->
+    <header class="hero">
+      <div class="hero-top">
+        <span class="logo-pill" aria-hidden="true">
+          <img class="logo-img" th:src="@{/image/testok-logo.png}" src="/image/testok-logo.png" alt="Testok" />
+        </span>
+        <div class="brand-tag">Encontrá el perfil, detrás del perfil.</div>
       </div>
-    </td>
-  </tr>
-  </tbody>
-</table>
 
-<script>
-  setTimeout(() => {
-    document.querySelectorAll('.toast').forEach(t => t.remove());
-  }, 3000);
-</script>
+      <!-- NAV ABAJO -->
+      <div class="nav">
+        <div class="nav-inner">
+          <div class="nav-left">
+            <span class="kicker" th:text="${esSuperAdmin} ? 'Empresas' : 'Solo testok'">Empresas</span>
+            <p class="subtitle"
+               th:text="${esSuperAdmin} ? 'Gestión de empresas: creación, edición y eliminación.' : 'Sección no disponible.'">
+              Gestión de empresas: creación, edición y eliminación.
+            </p>
+          </div>
 
+          <div class="nav-actions">
+            <a class="btn btn-light"
+               th:if="${esSuperAdmin}"
+               th:href="@{/admin/usuarios/nuevo}">
+              Agregar nuevo cliente
+            </a>
+
+            <a class="btn btn-ghost" th:href="@{/admin/clientes}">Volver</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Toasts -->
+    <div id="toast-container">
+      <div class="toast success" th:if="${ok}" th:text="${ok}"></div>
+      <div class="toast error" th:if="${err}" th:text="${err}"></div>
+    </div>
+
+    <div class="container">
+      <section class="card" aria-label="Tabla de usuarios">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre de empresa</th>
+                <th>Rol</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr th:if="${#lists.isEmpty(usuarios)}">
+                <td colspan="3" class="empty">No hay usuarios para usted.</td>
+              </tr>
+
+              <tr th:each="u : ${usuarios}">
+                <td th:text="${u.username}">Usuario</td>
+                <td class="role" th:text="${u.rol}">Administrador</td>
+
+                <td>
+                  <div class="actions">
+                    <a class="chip"
+                       th:href="@{/admin/usuarios/{id}/editar(id=${u.id})}">
+                      Editar
+                    </a>
+
+                    <!-- ✅ Eliminar: solo SUPERADMIN (con MODAL) -->
+                    <form th:if="${esSuperAdmin}"
+                          class="delete-form"
+                          th:action="@{/admin/usuarios/{id}/eliminar(id=${u.id})}"
+                          method="post"
+                          style="margin:0;"
+                          onsubmit="event.preventDefault(); abrirModalEliminar(this, '¿Estás seguro que deseas eliminar la empresa “' + (this.getAttribute('data-username') || 'este usuario') + '” ?');"
+                          th:attr="data-username=${u.username}">
+                      <button type="submit" class="chip chip-danger">Eliminar</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      © <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2025</span> Testok Argentina
+    </footer>
+  </div>
+
+  <!-- ===== MODAL (confirmación) ===== -->
+  <div id="modal-overlay" class="modal-overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div id="modal-title" class="modal-title">Confirmar eliminación</div>
+      <div id="modal-text" class="modal-text">¿Estás seguro que deseas eliminar?</div>
+
+      <div class="modal-actions">
+        <button type="button" class="modal-btn" onclick="cerrarModalEliminar()">Cancelar</button>
+        <button type="button" class="modal-btn danger" onclick="confirmarEliminar()">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Toasts
+    setTimeout(() => {
+      document.querySelectorAll('.toast').forEach(t => t.remove());
+    }, 3000);
+
+    // ===== Modal eliminar (misma lógica que en clientes) =====
+    let formAEliminar = null;
+
+    function abrirModalEliminar(form, mensaje) {
+      formAEliminar = form;
+
+      const overlay = document.getElementById('modal-overlay');
+      const text = document.getElementById('modal-text');
+
+      if (text && mensaje) text.textContent = mensaje;
+
+      overlay.style.display = 'flex';
+      overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function cerrarModalEliminar() {
+      const overlay = document.getElementById('modal-overlay');
+      formAEliminar = null;
+      overlay.style.display = 'none';
+      overlay.setAttribute('aria-hidden', 'true');
+    }
+
+    function confirmarEliminar() {
+      if (formAEliminar) formAEliminar.submit();
+    }
+
+    // Cerrar tocando afuera
+    document.addEventListener('click', function (e) {
+      const overlay = document.getElementById('modal-overlay');
+      if (!overlay || overlay.style.display === 'none') return;
+      if (e.target === overlay) cerrarModalEliminar();
+    });
+
+    // Cerrar con ESC
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') cerrarModalEliminar();
+    });
+  </script>
 </body>
 </html>

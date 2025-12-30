@@ -2,7 +2,6 @@ package com.testok.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -20,7 +19,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
 
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/clientes", "/error", "/403").permitAll()
+                .requestMatchers("/", "/clientes", "/error", "/403", "/image/**", "/css/**", "/js/**").permitAll()
 
                 // ✅ SOLO SUPERADMIN
                 .requestMatchers("/superadmin/**").hasRole("SUPERADMIN")
@@ -31,8 +30,16 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
         );
 
-        http.formLogin(Customizer.withDefaults());
-        http.logout(Customizer.withDefaults());
+        http.formLogin(form -> form
+        .loginPage("/login")              // usa tu template login.html
+        .defaultSuccessUrl("/admin/clientes", true)     // a dónde va si loguea OK
+        .failureUrl("/login?error=true")  // para mostrar mensaje
+        .permitAll()
+);
+        http.logout(logout -> logout
+        .logoutSuccessUrl("/login?logout=true")
+        .permitAll()
+);
 
         http.exceptionHandling(e -> e.accessDeniedPage("/403"));
 

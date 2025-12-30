@@ -3,190 +3,764 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>Admin - Clientes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Clientes | Testok</title>
+
+  <!-- Tipografías -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@500;600;700&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet">
+
   <style>
-    body { font-family: Arial, sans-serif; margin: 30px; background: #f6f7f9; }
-    .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-    .btn { padding: 10px 14px; background: #111; color: #fff; text-decoration: none; border-radius: 8px; display: inline-block; }
-    .msg-ok { padding: 10px; background: #e8ffe8; border: 1px solid #b6ffb6; margin-top: 12px; border-radius: 8px; }
-    .msg-err { padding: 10px; background: #ffecec; border: 1px solid #ffb3b3; margin-top: 12px; border-radius: 8px; }
+    :root {
+      --primary: #084391;
+      --secondary: #0dffdc;
 
-    .layout { display: grid; grid-template-columns: 1fr 360px; gap: 16px; margin-top: 16px; }
-    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+      --ink: #0b0f19;
+      --muted: #4b5b73;
 
-    .grid { display: grid; gap: 16px; grid-template-columns: repeat(4, 1fr); }
-    @media (max-width: 1100px) { .grid { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 700px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+      --bg-1: #f4f8ff;
 
-    .card { background: #fff; border: 1px solid #e6e6e6; border-radius: 14px; padding: 14px; box-shadow: 0 6px 18px rgba(0, 0, 0, .06); }
-    .card-link { text-decoration: none; color: inherit; display: block; }
-    .card-link:hover { transform: translateY(-1px); transition: .15s; }
+      --card: #ffffff;
+      --shadow: 0 14px 40px rgba(8, 67, 145, .18);
+      --shadow-soft: 0 8px 24px rgba(8, 67, 145, .12);
+      --radius: 18px;
 
-    .row { display: flex; align-items: center; gap: 12px; }
-    .avatar { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd; background: #eee; flex: 0 0 auto; }
-    .name { font-weight: 800; font-size: 16px; line-height: 1.2; }
-    .meta { color: #666; font-size: 14px; margin-top: 2px; }
+      --danger: #b00020;
+      --danger-bg: #ffecec;
 
-    .actions { display: flex; gap: 10px; margin-top: 12px; align-items: center; flex-wrap: wrap; }
-    .link { text-decoration: none; padding: 8px 12px; border-radius: 8px; display: inline-block; border: 1px solid #ddd; background: #f0f0f0; color: #111; cursor: pointer; }
-    .del { background: #ffecec; border: 1px solid #ffb3b3; color: #a40000; cursor: pointer; }
-    form { margin: 0; }
+      --ok-bg: rgba(13, 255, 220, .18);
+    }
 
-    .readonly { display: inline-block; padding: 6px 10px; border-radius: 999px; border: 1px solid #ddd; background: #fafafa; color: #666; font-size: 12px; }
+    * {
+      box-sizing: border-box;
+    }
 
-    .panel { background: #fff; border: 1px solid #e6e6e6; border-radius: 14px; padding: 14px; box-shadow: 0 6px 18px rgba(0, 0, 0, .06); position: sticky; top: 16px; height: fit-content; }
-    .panel h2 { margin: 0 0 8px 0; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(900px 420px at 80% 10%, rgba(13, 255, 220, .16), transparent 60%),
+        linear-gradient(180deg, var(--bg-1) 0%, #ffffff 42%);
+      color: var(--ink);
+      font-family: Roboto, system-ui, -apple-system, Segoe UI, sans-serif;
+    }
 
-    .sep { height: 1px; background: #eee; margin: 12px 0; }
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-    .badge { display: inline-block; padding: 4px 10px; border-radius: 999px; border: 1px solid #ddd; background: #f5f5f5; font-size: 12px; margin-right: 6px; margin-bottom: 6px; }
+    /* ================= HEADER ================= */
+    .hero {
+      background: linear-gradient(90deg, #06336d, var(--primary));
+      color: #fff;
+      padding: 16px 18px 0;
+    }
 
-    .close { display: inline-block; padding: 8px 12px; border-radius: 8px; background: #111; color: #fff; text-decoration: none; }
-    .close.secondary { background: #f0f0f0; color: #111; border: 1px solid #ddd; }
+    .hero-top {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding-bottom: 14px;
+    }
 
-    #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 12px; }
-    .toast { min-width: 260px; max-width: 340px; padding: 14px 18px; border-radius: 12px; font-size: 14px; color: #111; background: #fff; box-shadow: 0 10px 30px rgba(0, 0, 0, .15); border-left: 6px solid; animation: slideIn .3s ease, fadeOut .3s ease 2.7s forwards; }
-    .toast.success { border-color: #2ecc71; }
-    .toast.error { border-color: #e74c3c; }
-    @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-    @keyframes fadeOut { to { opacity: 0; transform: translateX(20px); } }
+    .logo-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+    }
 
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, .45); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
-    .modal { width: 100%; max-width: 420px; background: #fff; border-radius: 16px; border: 1px solid #eee; box-shadow: 0 18px 50px rgba(0, 0, 0, .2); padding: 18px; animation: modalIn .18s ease; }
-    .modal-title { font-weight: 900; font-size: 18px; margin-bottom: 8px; }
-    .modal-text { color: #444; font-size: 14px; line-height: 1.4; }
-    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
-    .modal-btn { padding: 10px 14px; border-radius: 10px; border: 1px solid #ddd; background: #f3f3f3; cursor: pointer; font-weight: 700; }
-    .modal-btn.secondary { background: #f3f3f3; color: #111; }
-    .modal-btn.danger { background: #ffecec; border: 1px solid #ffb3b3; color: #a40000; }
-    @keyframes modalIn { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .logo-img {
+      height: 34px;
+      width: auto;
+      max-width: 220px;
+      display: block;
+      object-fit: contain;
+    }
+
+    /* ================= NAVBAR ================= */
+    .nav {
+      border-top: 1px solid rgba(255, 255, 255, .14);
+      background: rgba(0, 0, 0, .06);
+    }
+
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 12px 18px 14px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .nav-left {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 320px;
+    }
+
+    .kicker {
+      font-family: "Josefin Sans", sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 8px 12px;
+      background: var(--secondary);
+      color: #002a3a;
+      border-radius: 10px;
+      display: inline-block;
+      width: fit-content;
+    }
+
+    .subtitle {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.45;
+      color: #e6f1ff;
+      max-width: 56ch;
+    }
+
+    .brand-tag {
+      font-size: 12px;
+      color: rgba(230, 241, 255, .92);
+      line-height: 1.2;
+      max-width: 260px;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      padding: 11px 16px;
+      border-radius: 12px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 13px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: filter .15s ease, transform .06s ease, background .15s ease;
+      font-family: Roboto, sans-serif;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .btn-light {
+      background: #fff;
+      color: var(--primary);
+      border-color: rgba(255, 255, 255, .6);
+      box-shadow: 0 10px 22px rgba(6, 26, 51, .12);
+    }
+
+    .btn-light:hover {
+      filter: brightness(.98);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.5);
+      color: #000000;
+      border-color: rgba(10, 9, 9, 0.22);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, .14);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    @media (max-width: 900px) {
+      .nav-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .nav-left {
+        min-width: 0;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .logo-img {
+        height: 30px;
+        max-width: 190px;
+      }
+
+      .logo-pill {
+        padding: 9px 12px;
+        border-radius: 14px;
+      }
+    }
+
+    /* ================= CONTENT ================= */
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      margin: 40px auto 40px;
+      padding: 0 18px;
+    }
+
+    /* ====== LAYOUT: con panel a la derecha (detalle) ====== */
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 270px;
+      gap: 15px;
+      align-items: start;
+    }
+
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 2fr;
+      }
+    }
+
+    /* ====== GRID: por defecto 3 columnas (cuando NO hay panel visible) ====== */
+    .grid {
+      display: grid;
+      gap: 13px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: center;
+    }
+
+    /* Cuando el panel está visible, forzamos 3 columnas */
+    .layout.has-panel .grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    /* Responsivo: baja columnas en pantallas más chicas */
+    @media (max-width: 1100px) {
+      .grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .layout.has-panel .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 820px) {
+      .grid,
+      .layout.has-panel .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 480px) {
+      .grid,
+      .layout.has-panel .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      height: 100%;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(8, 67, 145, .10);
+      padding: 14px;
+      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+      height: 100%;
+    }
+
+    .card-link:hover .card {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+      border-color: rgba(13, 255, 220, .45);
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid rgba(8, 67, 145, .16);
+      background: #e9eef8;
+      flex: 0 0 auto;
+    }
+
+    .text {
+      min-width: 0;
+      flex: 1;
+    }
+
+    /* ✅ Nombre SIEMPRE en una sola línea */
+    .name {
+      font-family: "Josefin Sans", sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 1.2;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 12.5px;
+      margin-top: 3px;
+      line-height: 1.25;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid rgba(8, 67, 145, .14);
+      background: rgba(8, 67, 145, .06);
+      color: var(--primary);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      transition: filter .15s ease, transform .06s ease, background .15s ease;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .chip:hover {
+      filter: brightness(1.03);
+    }
+
+    .chip:active {
+      transform: translateY(1px);
+    }
+
+    .chip-danger {
+      background: rgba(176, 0, 32, .08);
+      border-color: rgba(176, 0, 32, .20);
+      color: #b00020;
+    }
+
+    form {
+      margin: 0;
+    }
+
+    .readonly {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(8, 67, 145, .16);
+      background: rgba(255, 255, 255, .7);
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .readonly::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(8, 67, 145, .28);
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid rgba(8, 67, 145, .10);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow-soft);
+      position: sticky;
+      top: 16px;
+      height: fit-content;
+    }
+
+    .panel h2 {
+      margin: 0;
+      font-family: "Josefin Sans", sans-serif;
+      font-weight: 700;
+      letter-spacing: .2px;
+      font-size: 18px;
+    }
+
+    .sep {
+      height: 1px;
+      background: rgba(8, 67, 145, .10);
+      margin: 12px 0;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(8, 67, 145, .14);
+      background: rgba(8, 67, 145, .06);
+      font-size: 12px;
+      margin: 0 6px 6px 0;
+      color: #0b2447;
+      white-space: nowrap;
+    }
+
+    .badge b {
+      color: var(--primary);
+    }
+
+    .panel h3 {
+      margin: 0 0 6px 0;
+      font-family: "Josefin Sans", sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+      color: #0b2447;
+    }
+
+    .panel-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    #toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .toast {
+      min-width: 260px;
+      max-width: 360px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      font-size: 13px;
+      color: var(--ink);
+      background: #fff;
+      box-shadow: var(--shadow);
+      border-left: 6px solid;
+      animation: slideIn .3s ease, fadeOut .3s ease 2.7s forwards;
+    }
+
+    .toast.success {
+      border-color: var(--secondary);
+    }
+
+    .toast.error {
+      border-color: rgba(176, 0, 32, .75);
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(18px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        transform: translateX(18px);
+      }
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 26, 51, .55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      padding: 20px;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 440px;
+      background: #fff;
+      border-radius: 18px;
+      border: 1px solid rgba(8, 67, 145, .12);
+      box-shadow: 0 18px 55px rgba(6, 26, 51, .30);
+      padding: 18px;
+      animation: modalIn .18s ease;
+    }
+
+    .modal-title {
+      font-family: "Josefin Sans", sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .modal-text {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .modal-btn {
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(8, 67, 145, .14);
+      background: rgba(8, 67, 145, .06);
+      cursor: pointer;
+      font-weight: 700;
+      font-family: Roboto, sans-serif;
+      transition: filter .15s ease, transform .06s ease, background .15s ease;
+      white-space: nowrap;
+    }
+
+    .modal-btn:hover {
+      filter: brightness(1.03);
+    }
+
+    .modal-btn:active {
+      transform: translateY(1px);
+    }
+
+    .modal-btn.danger {
+      background: rgba(176, 0, 32, .08);
+      border-color: rgba(176, 0, 32, .20);
+      color: var(--danger);
+    }
+
+    @keyframes modalIn {
+      from {
+        transform: translateY(8px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    footer {
+      margin-top: auto;
+      text-align: center;
+      font-size: 12px;
+      color: #5a6a82;
+      padding: 16px;
+      font-family: Roboto, sans-serif;
+    }
   </style>
 </head>
 
 <body>
+  <div class="page">
 
-  <div id="toast-container">
-    <div class="toast success" th:if="${ok}" th:text="${ok}"></div>
-    <div class="toast error" th:if="${err}" th:text="${err}"></div>
-  </div>
+    <header class="hero">
+      <div class="hero-top">
+        <span class="logo-pill" aria-hidden="true">
+          <img class="logo-img" th:src="@{/image/testok-logo.png}" src="/image/testok-logo.png" alt="Testok" />
+        </span>
+        <div class="brand-tag">Encontrá el perfil, detrás del perfil.</div>
+      </div>
 
-  <div class="top">
-    <h1>Panel Admin - Clientes</h1>
-    <div style="display:flex; gap:10px; align-items:center;">
-
-      <!-- ✅ SOLO SUPERADMIN (sin th:if, porque en este controller no lo estás seteando) -->
-      <a class="btn"
-         sec:authorize="hasAuthority('ROLE_SUPERADMIN')"
-         th:href="@{/admin/usuarios}">
-        Ver usuarios administradores
-      </a>
-
-      <a class="btn" th:href="@{/admin/clientes/nuevo}">Agregar nuevo empleado</a>
-      <a class="btn" th:href="@{/logout}">Salir</a>
-    </div>
-  </div>
-
-  <div th:if="${#lists.isEmpty(clientes)}" class="msg-err">
-    No hay clientes todavía.
-  </div>
-
-  <div class="layout" th:if="${!#lists.isEmpty(clientes)}">
-
-    <div class="grid">
-      <a class="card card-link" th:each="c : ${clientes}" th:href="@{/admin/clientes(ver=${c.id})}">
-        <div class="row">
-          <img class="avatar"
-            th:src="${(c.fotoPerfilUrl != null && !#strings.isEmpty(c.fotoPerfilUrl)) ? c.fotoPerfilUrl : 'https://via.placeholder.com/200'}"
-            alt="Foto de perfil" />
-          <div>
-            <div class="name" th:text="${c.nombre + ' ' + c.apellido}">Nombre Apellido</div>
-            <div class="meta"><span th:text="${c.edad}">0</span> años</div>
+      <div class="nav">
+        <div class="nav-inner">
+          <div class="nav-left">
+            <span class="kicker">Panel Empresas</span>
+            <p class="subtitle">Gestión de empleados: alta, edición, eliminación y detalle.</p>
           </div>
-        </div>
 
-        <div class="actions">
-          <div th:if="${c.createdBy != null && c.createdBy.username == usernameLogueado}"
-            style="display:flex; gap:10px; align-items:center;">
-            <span class="link" th:attr="data-href=@{'/admin/clientes/' + ${c.id} + '/editar'}"
-              onclick="event.preventDefault(); event.stopPropagation(); window.location=this.getAttribute('data-href');">
-              Editar
-            </span>
+          <div class="nav-actions">
+            <!-- ✅ SOLO SUPERADMIN ve este botón -->
+            <sec:authorize access="hasAuthority('ROLE_SUPERADMIN')">
+              <a class="btn btn-light" th:href="@{/admin/usuarios}">
+                Ver usuarios administradores (solo disponible para testok)
+              </a>
+            </sec:authorize>
 
-            <form class="delete-form" th:action="@{'/admin/clientes/' + ${c.id} + '/eliminar'}" method="post"
-              onsubmit="event.preventDefault(); event.stopPropagation(); abrirModalEliminar(this);">
-              <button class="link del" type="submit">Eliminar</button>
+            <a class="btn btn-light" th:href="@{/admin/clientes/nuevo}">Agregar nuevo empleado</a>
+
+            <!-- ✅ Logout correcto (POST) -->
+            <form th:action="@{/logout}" method="post" style="margin:0; display:inline;">
+              <button class="btn btn-ghost" type="submit">Cerrar sesión</button>
             </form>
           </div>
-
-          <span class="readonly" th:if="${c.createdBy == null || c.createdBy.username != usernameLogueado}">
-            Solo lectura
-          </span>
         </div>
-      </a>
+      </div>
+    </header>
+
+    <!-- Toasts -->
+    <div id="toast-container">
+      <div class="toast success" th:if="${ok}" th:text="${ok}"></div>
+      <div class="toast error" th:if="${err}" th:text="${err}"></div>
     </div>
 
-    <div class="panel" th:if="${seleccionado != null}">
-      <div class="row">
-        <img class="avatar"
-          th:src="${(seleccionado.fotoPerfilUrl != null && !#strings.isEmpty(seleccionado.fotoPerfilUrl)) ? seleccionado.fotoPerfilUrl : 'https://via.placeholder.com/200'}"
-          alt="Foto de perfil" />
-        <div>
-          <h2 th:text="${seleccionado.nombre + ' ' + seleccionado.apellido}">Nombre Apellido</h2>
-          <div class="meta"><span th:text="${seleccionado.edad}">0</span> años</div>
+    <div class="container">
 
-          <div style="margin-top:8px;">
-            <span class="readonly"
-              th:if="${seleccionado.createdBy == null || seleccionado.createdBy.username != usernameLogueado}">
-              Solo lectura
-            </span>
+      <div th:if="${#lists.isEmpty(clientes)}" class="msg msg-err">
+        No hay clientes todavía.
+      </div>
+
+      <!-- ✅ Agregamos clase dinámica: si hay seleccionado => has-panel -->
+      <div class="layout" th:if="${!#lists.isEmpty(clientes)}"
+        th:classappend="${seleccionado != null} ? ' has-panel' : ''">
+
+        <div class="grid">
+          <a class="card-link" th:each="c : ${clientes}" th:href="@{/admin/clientes(ver=${c.id})}">
+            <article class="card">
+              <div class="row">
+                <img class="avatar"
+                  th:src="${(c.fotoPerfilUrl != null && !#strings.isEmpty(c.fotoPerfilUrl)) ? c.fotoPerfilUrl : 'https://via.placeholder.com/200'}"
+                  alt="Foto de perfil" />
+                </div>
+                <div class="text">
+                  <div class="name" th:text="${c.nombre + ' ' + c.apellido}">Nombre Apellido</div>
+                  <div class="meta"><span th:text="${c.edad}">0</span> años</div>
+                </div>
+
+              <div class="actions">
+                <div th:if="${c.createdBy != null && c.createdBy.username == usernameLogueado}"
+                  style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                  <span class="chip" th:attr="data-href=@{'/admin/clientes/' + ${c.id} + '/editar'}"
+                    onclick="event.preventDefault(); event.stopPropagation(); window.location=this.getAttribute('data-href');">
+                    Editar
+                  </span>
+
+                  <form class="delete-form" th:action="@{'/admin/clientes/' + ${c.id} + '/eliminar'}" method="post"
+                    onsubmit="event.preventDefault(); event.stopPropagation(); abrirModalEliminar(this);">
+                    <button class="chip chip-danger" type="submit">Eliminar</button>
+                  </form>
+                </div>
+
+                <span class="readonly" th:if="${c.createdBy == null || c.createdBy.username != usernameLogueado}">
+                  Solo lectura
+                </span>
+              </div>
+            </article>
+          </a>
+        </div>
+
+        <aside class="panel" th:if="${seleccionado != null}">
+          <div class="row">
+            <img class="avatar"
+              th:src="${(seleccionado.fotoPerfilUrl != null && !#strings.isEmpty(seleccionado.fotoPerfilUrl)) ? seleccionado.fotoPerfilUrl : 'https://via.placeholder.com/200'}"
+              alt="Foto de perfil" />
+            <div class="text">
+              <h2 th:text="${seleccionado.nombre + ' ' + seleccionado.apellido}">Nombre Apellido</h2>
+              <div class="meta"><span th:text="${seleccionado.edad}">0</span> años</div>
+
+              <div style="margin-top:10px;">
+                <span class="readonly"
+                  th:if="${seleccionado.createdBy == null || seleccionado.createdBy.username != usernameLogueado}">
+                  Solo lectura
+                </span>
+              </div>
+            </div>
           </div>
-        </div>
+
+          <div class="sep"></div>
+
+          <div>
+            <span class="badge">Desempeño: <b th:text="${seleccionado.desempeno}">0</b>/10</span>
+            <span class="badge">Reputación: <b th:text="${seleccionado.reputacionLaboral}">0</b>/10</span>
+            <span class="badge">Cumplimiento: <b th:text="${seleccionado.cumplimiento}">0</b>/10</span>
+            <span class="badge">Habilidades blandas: <b th:text="${seleccionado.habilidadesBlandas}">0</b>/10</span>
+          </div>
+
+          <div class="sep"></div>
+
+          <div>
+            <h3>Historial</h3>
+            <div class="meta" th:text="${seleccionado.historial != null ? seleccionado.historial : '—'}">—</div>
+          </div>
+
+          <div class="sep"></div>
+
+          <div>
+            <h3>Valoraciones generales</h3>
+            <div class="meta"
+              th:text="${seleccionado.valoracionesGenerales != null ? seleccionado.valoracionesGenerales : '—'}">—</div>
+          </div>
+
+          <div class="panel-actions">
+            <a class="btn btn-ghost" th:href="@{/admin/clientes}">Cerrar detalle</a>
+
+            <a class="btn btn-light"
+              th:if="${seleccionado.createdBy != null && seleccionado.createdBy.username == usernameLogueado}"
+              th:href="@{'/admin/clientes/' + ${seleccionado.id} + '/editar'}">
+              Editar
+            </a>
+          </div>
+        </aside>
+
       </div>
-
-      <div class="sep"></div>
-
-      <div>
-        <span class="badge">Desempeño: <b th:text="${seleccionado.desempeno}">0</b>/10</span>
-        <span class="badge">Reputación: <b th:text="${seleccionado.reputacionLaboral}">0</b>/10</span>
-        <span class="badge">Cumplimiento: <b th:text="${seleccionado.cumplimiento}">0</b>/10</span>
-        <span class="badge">H. blandas: <b th:text="${seleccionado.habilidadesBlandas}">0</b>/10</span>
-      </div>
-
-      <div class="sep"></div>
-
-      <div>
-        <h3 style="margin:0 0 6px 0;">Historial</h3>
-        <div class="meta" th:text="${seleccionado.historial != null ? seleccionado.historial : '—'}">—</div>
-      </div>
-
-      <div class="sep"></div>
-
-      <div>
-        <h3 style="margin:0 0 6px 0;">Valoraciones generales</h3>
-        <div class="meta"
-          th:text="${seleccionado.valoracionesGenerales != null ? seleccionado.valoracionesGenerales : '—'}">—</div>
-      </div>
-
-      <div class="sep"></div>
-
-      <a class="close" th:href="@{/admin/clientes}">Cerrar detalle</a>
-
-      <a class="close secondary"
-        th:if="${seleccionado.createdBy != null && seleccionado.createdBy.username == usernameLogueado}"
-        th:href="@{'/admin/clientes/' + ${seleccionado.id} + '/editar'}" style="margin-left:8px;">
-        Editar
-      </a>
     </div>
 
+    <footer>
+      © <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2025</span> Testok Argentina
+    </footer>
   </div>
 
+  <!-- Modal -->
   <div id="modal-overlay" class="modal-overlay" style="display:none;">
-    <div class="modal">
-      <div class="modal-title">Confirmar eliminación</div>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div id="modal-title" class="modal-title">Confirmar eliminación</div>
       <div class="modal-text">¿Estás seguro que deseas eliminar el empleado?</div>
 
       <div class="modal-actions">
-        <button type="button" class="modal-btn secondary" onclick="cerrarModalEliminar()">Cancelar</button>
+        <button type="button" class="modal-btn" onclick="cerrarModalEliminar()">Cancelar</button>
         <button type="button" class="modal-btn danger" onclick="confirmarEliminar()">Eliminar</button>
       </div>
     </div>
@@ -210,9 +784,7 @@
     }
 
     function confirmarEliminar() {
-      if (formAEliminar) {
-        formAEliminar.submit();
-      }
+      if (formAEliminar) formAEliminar.submit();
     }
 
     document.addEventListener('click', function (e) {
@@ -225,6 +797,6 @@
       if (e.key === 'Escape') cerrarModalEliminar();
     });
   </script>
-
 </body>
+
 </html>

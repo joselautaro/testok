@@ -22,16 +22,17 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
         Usuario u = usuarioRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
-        // Spring Security espera roles como: ROLE_ADMIN / ROLE_USER
-        String role = "ROLE_" + u.getRol().name();
+        // ✅ Normalización total: ADMIN / USER / SUPERADMIN -> ROLE_ADMIN / ROLE_USER / ROLE_SUPERADMIN
+        String authority = "ROLE_" + u.getRol().name().toUpperCase().replace("_", "");
 
         return new org.springframework.security.core.userdetails.User(
                 u.getUsername(),
                 u.getPassword(),
-                List.of(new SimpleGrantedAuthority(role))
+                List.of(new SimpleGrantedAuthority(authority))
         );
     }
 }

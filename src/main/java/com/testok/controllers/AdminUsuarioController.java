@@ -79,7 +79,7 @@ public class AdminUsuarioController {
             }
 
             usuarioService.crearUsuario(username, password, rol);
-            ra.addAttribute("ok", "Usuario creado correctamente");
+            ra.addAttribute("ok", "Empresa creada correctamente");
             return "redirect:/admin/usuarios";
 
         } catch (IllegalArgumentException ex) {
@@ -120,7 +120,7 @@ public class AdminUsuarioController {
 
             usuarioService.editarUsuario(id, username, password, rol);
 
-            ra.addAttribute("ok", "Usuario actualizado correctamente");
+            ra.addAttribute("ok", "Empresa actualizada correctamente");
             return "redirect:/admin/usuarios";
 
         } catch (AccessDeniedException | IllegalArgumentException ex) {
@@ -138,7 +138,7 @@ public class AdminUsuarioController {
     public String eliminar(@PathVariable Long id, RedirectAttributes ra) {
         try {
             usuarioService.eliminarUsuario(id);
-            ra.addAttribute("ok", "Usuario eliminado correctamente");
+            ra.addAttribute("ok", "Empresa eliminada correctamente");
             return "redirect:/admin/usuarios";
 
         } catch (AccessDeniedException ex) {

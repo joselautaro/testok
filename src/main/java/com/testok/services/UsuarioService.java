@@ -58,7 +58,7 @@ public class UsuarioService {
     public Usuario crearUsuario(String username, String rawPassword, Rol rol) {
 
         if (username == null || username.trim().isEmpty()) {
-            throw new IllegalArgumentException("El username no puede estar vacío.");
+            throw new IllegalArgumentException("El nombre de usuario no puede estar vacío.");
         }
         username = username.trim();
 

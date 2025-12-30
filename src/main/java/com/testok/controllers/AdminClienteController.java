@@ -99,7 +99,7 @@ public class AdminClienteController {
             // 🔐 SOLO si es propio
             clienteService.actualizarPropio(id, cliente, username);
 
-            ra.addAttribute("ok", "Cliente actualizado correctamente");
+            ra.addAttribute("ok", "Empleado actualizada correctamente");
             return "redirect:/admin/clientes?ver=" + id;
 
         } catch (Exception ex) {
@@ -118,7 +118,7 @@ public class AdminClienteController {
             // 🔐 SOLO si es propio
             clienteService.eliminarPropio(id, username);
 
-            ra.addAttribute("ok", "Cliente eliminado correctamente");
+            ra.addAttribute("ok", "Empleado eliminado correctamente");
             return "redirect:/admin/clientes";
 
         } catch (Exception ex) {

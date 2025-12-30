@@ -33,15 +33,6 @@ public class DataSeeder {
                 admin.setRol(Rol.ADMIN);
                 repo.save(admin);
             }
-
-            // ✅ USER
-            if (!repo.existsByUsername("user")) {
-                Usuario user = new Usuario();
-                user.setUsername("user");
-                user.setPassword(encoder.encode("user123"));
-                user.setRol(Rol.USER);
-                repo.save(user);
-            }
         };
     }
 }
