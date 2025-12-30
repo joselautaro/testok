@@ -1,0 +1,17 @@
+C:\Users\joseb\OneDrive\Escritorio\test_ok\testok\src\main\java\com\testok\config\DataSeeder.java
+C:\Users\joseb\OneDrive\Escritorio\test_ok\testok\src\main\java\com\testok\config\SecurityConfig.java
+C:\Users\joseb\OneDrive\Escritorio\test_ok\testok\src\main\java\com\testok\controllers\AdminClienteController.java
+C:\Users\joseb\OneDrive\Escritorio\test_ok\testok\src\main\java\com\testok\controllers\AdminUsuarioController.java
+C:\Users\joseb\OneDrive\Escritorio\test_ok\testok\src\main\java\com\testok\controllers\AuthController.java
+C:\Users\joseb\OneDrive\Escritorio\test_ok\testok\src\main\java\com\testok\controllers\ClienteController.java
+C:\Users\joseb\OneDrive\Escritorio\test_ok\testok\src\main\java\com\testok\controllers\ErrorControllerCustom.java
+C:\Users\joseb\OneDrive\Escritorio\test_ok\testok\src\main\java\com\testok\entities\Cliente.java
+C:\Users\joseb\OneDrive\Escritorio\test_ok\testok\src\main\java\com\testok\entities\Rol.java
+C:\Users\joseb\OneDrive\Escritorio\test_ok\testok\src\main\java\com\testok\entities\Usuario.java
+C:\Users\joseb\OneDrive\Escritorio\test_ok\testok\src\main\java\com\testok\exceptions\AccesoDenegadoException.java
+C:\Users\joseb\OneDrive\Escritorio\test_ok\testok\src\main\java\com\testok\repositories\ClienteRepository.java
+C:\Users\joseb\OneDrive\Escritorio\test_ok\testok\src\main\java\com\testok\repositories\UsuarioRepository.java
+C:\Users\joseb\OneDrive\Escritorio\test_ok\testok\src\main\java\com\testok\services\ClienteService.java
+C:\Users\joseb\OneDrive\Escritorio\test_ok\testok\src\main\java\com\testok\services\CustomUserDetailsService.java
+C:\Users\joseb\OneDrive\Escritorio\test_ok\testok\src\main\java\com\testok\services\UsuarioService.java
+C:\Users\joseb\OneDrive\Escritorio\test_ok\testok\src\main\java\com\testok\TestokApplication.java

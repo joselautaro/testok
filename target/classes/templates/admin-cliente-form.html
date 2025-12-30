@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title th:text="${modo} == 'editar' ? 'Editar empleado | Testok' : 'Nuevo empleado | Testok'">Empleado</title>
+
+  <!-- Tipografías -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --primary:#084391;
+      --secondary:#0dffdc;
+
+      --ink:#0b0f19;
+      --muted:#4b5b73;
+
+      --bg-1:#f4f8ff;
+
+      --card:#ffffff;
+      --border:rgba(8,67,145,.18);
+      --shadow:0 14px 40px rgba(8,67,145,.18);
+      --shadow-soft:0 8px 24px rgba(8,67,145,.12);
+      --radius:18px;
+
+      --danger:#b00020;
+      --danger-bg:#ffecec;
+
+      --ok-bg:rgba(13,255,220,.18);
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      background:
+        radial-gradient(900px 420px at 80% 10%, rgba(13,255,220,.16), transparent 60%),
+        linear-gradient(180deg, var(--bg-1) 0%, #ffffff 42%);
+      color:var(--ink);
+      font-family: Roboto, system-ui, -apple-system, Segoe UI, sans-serif;
+    }
+
+    .page{
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+    }
+
+    /* ================= HEADER (arriba solo logo) ================= */
+    .hero{
+      background: linear-gradient(90deg, #06336d, var(--primary));
+      color:#fff;
+      padding: 18px 18px 0;
+    }
+
+    .hero-top{
+      max-width:1100px;
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:flex-start;
+      gap:14px;
+      padding-bottom:14px;
+    }
+
+    .logo-pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding: 10px 14px;
+    }
+
+    .logo-img{
+      height:34px;
+      width:auto;
+      max-width:220px;
+      display:block;
+      object-fit:contain;
+    }
+
+    .logo-fallback{
+      display:none;
+      font-family:"Josefin Sans", sans-serif;
+      font-weight:700;
+      letter-spacing:.4px;
+      color:#061a33;
+      font-size:18px;
+      line-height:1;
+      padding: 4px 2px;
+      white-space: nowrap;
+    }
+
+    .brand-tag{
+      font-size: 12px;
+      color: rgba(230,241,255,.92);
+      line-height: 1.2;
+      max-width: 320px;
+    }
+
+    /* ================= NAV (abajo) ================= */
+    .nav{
+      border-top: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.06);
+    }
+
+    .nav-inner{
+      max-width:1100px;
+      margin:0 auto;
+      padding: 12px 18px 14px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:18px;
+    }
+
+    .nav-left{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-width:320px;
+    }
+
+    .kicker{
+      font-family:"Josefin Sans", sans-serif;
+      font-size:18px;
+      font-weight:700;
+      text-transform:uppercase;
+      padding:8px 12px;
+      background: var(--secondary);
+      color:#002a3a;
+      border-radius:10px;
+      display:inline-block;
+      width: fit-content;
+    }
+
+    .subtitle{
+      margin:0;
+      font-size:13px;
+      line-height:1.45;
+      color:#e6f1ff;
+      max-width: 70ch;
+      font-family: Roboto, sans-serif;
+    }
+
+    @media (max-width: 900px){
+      .nav-inner{ flex-direction:column; align-items:flex-start; }
+      .nav-left{ min-width:0; }
+      .brand-tag{ max-width: 100%; }
+    }
+
+    @media (max-width: 520px){
+      .logo-img{ height:30px; max-width:190px; }
+      .logo-pill{ padding:9px 12px; border-radius:14px; }
+    }
+
+    /* ================= CONTENT ================= */
+    .container{
+      width:100%;
+      max-width:1100px;
+      margin: 22px auto 40px;
+      padding: 0 18px;
+      flex: 1;
+    }
+
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow-soft);
+      border: 1px solid rgba(8,67,145,.10);
+      padding: 18px;
+    }
+
+    /* Header del formulario */
+    .form-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .section-title{
+      font-family:"Josefin Sans", sans-serif;
+      font-size:18px;
+      font-weight:700;
+      text-transform:uppercase;
+      background:var(--secondary);
+      color:#002a3a;
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:8px;
+      margin:0;
+    }
+
+    .hint{
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.4;
+    }
+
+    /* Grid de campos */
+    .form-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 860px){
+      .form-grid{ grid-template-columns: 1fr; }
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      min-width: 0;
+    }
+
+    label{
+      font-size:12px;
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:.3px;
+      color:#0b2447;
+      font-family: Roboto, sans-serif;
+    }
+
+    input, textarea{
+      width:100%;
+      border-radius:12px;
+      border:1px solid var(--border);
+      padding: 10px 12px;
+      font-size:14px;
+      font-family: Roboto, sans-serif;
+      background:#fff;
+      color: var(--ink);
+      transition: box-shadow .15s ease, border-color .15s ease;
+    }
+
+    input{
+      height:44px;
+      padding: 0 12px;
+    }
+
+    textarea{
+      resize: vertical;
+      min-height: 110px;
+      line-height: 1.45;
+    }
+
+    input:focus, textarea:focus{
+      outline:none;
+      border-color:var(--secondary);
+      box-shadow:0 0 0 3px rgba(13,255,220,.25);
+    }
+
+    .help{
+      margin: 6px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Preview */
+    .preview{
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(8,67,145,.10);
+      background: rgba(255,255,255,.65);
+      display:flex;
+      gap: 12px;
+      align-items:center;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .avatar{
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid rgba(8,67,145,.16);
+      background: #e9eef8;
+      flex: 0 0 auto;
+    }
+
+    .preview b{
+      font-family:"Josefin Sans", sans-serif;
+      letter-spacing:.2px;
+      color:#0b2447;
+    }
+
+    /* Acciones */
+    .row{
+      display:flex;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+      justify-content:flex-end;
+    }
+
+    .btn{
+      padding: 11px 16px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      cursor:pointer;
+      font-weight:700;
+      font-size: 13px;
+      font-family: Roboto, sans-serif;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      transition: filter .15s ease, transform .06s ease, background .15s ease;
+      user-select:none;
+      white-space: nowrap;
+    }
+
+    .btn-primary{
+      background: var(--primary);
+      color:#fff;
+      box-shadow: 0 10px 22px rgba(6,26,51,.14);
+    }
+    .btn-primary:hover{ filter: brightness(1.06); }
+    .btn-primary:active{ transform: translateY(1px); }
+
+    .btn-secondary{
+      background: rgba(8,67,145,.06);
+      color: var(--primary);
+      border-color: rgba(8,67,145,.14);
+    }
+    .btn-secondary:hover{ background: rgba(8,67,145,.09); }
+    .btn-secondary:active{ transform: translateY(1px); }
+
+    footer{
+      margin-top:auto;
+      text-align:center;
+      font-size:12px;
+      color:#5a6a82;
+      padding:16px;
+      font-family: Roboto, sans-serif;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <!-- HEADER -->
+    <header class="hero">
+      <div class="hero-top">
+        <span class="logo-pill" aria-label="Testok">
+          <img
+            class="logo-img"
+            th:src="@{/image/testok-logo.png}"
+            src="/image/testok-logo.png"
+            alt="Testok"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';"
+          />
+          <span class="logo-fallback">TESTOK</span>
+        </span>
+        <div class="brand-tag">Encontrá el perfil, detrás del perfil.</div>
+      </div>
+
+      <div class="nav">
+        <div class="nav-inner">
+          <div class="nav-left">
+            <span class="kicker" th:text="${modo} == 'editar' ? 'Editar empleado' : 'Nuevo empleado'">Empleado</span>
+            <p class="subtitle">
+              Completá los campos para guardar el perfil. Los puntajes van del 1 al 10.
+            </p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="container">
+
+      <section class="card">
+        <div class="form-head">
+          <h1 class="section-title" th:text="${modo} == 'editar' ? 'Editar empleado' : 'Nuevo empleado'">Empleado</h1>
+          <p class="hint">Campos obligatorios marcados por validación del formulario.</p>
+        </div>
+
+        <form th:object="${cliente}" method="post"
+          th:action="${modo} == 'editar' ? @{'/admin/clientes/' + ${cliente.id}} : @{/admin/clientes}">
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="nombre">Nombre</label>
+              <input id="nombre" type="text" th:field="*{nombre}" required />
+            </div>
+
+            <div class="field">
+              <label for="apellido">Apellido</label>
+              <input id="apellido" type="text" th:field="*{apellido}" required />
+            </div>
+
+            <div class="field">
+              <label for="edad">Edad</label>
+              <input id="edad" type="number" min="0" max="120" th:field="*{edad}" required />
+            </div>
+
+            <div class="field">
+              <label for="desempeno">Desempeño (1-10)</label>
+              <input id="desempeno" type="number" min="1" max="10" th:field="*{desempeno}" required />
+            </div>
+
+            <div class="field">
+              <label for="reputacionLaboral">Reputación laboral (1-10)</label>
+              <input id="reputacionLaboral" type="number" min="1" max="10" th:field="*{reputacionLaboral}" required />
+            </div>
+
+            <div class="field">
+              <label for="cumplimiento">Cumplimiento (1-10)</label>
+              <input id="cumplimiento" type="number" min="1" max="10" th:field="*{cumplimiento}" required />
+            </div>
+
+            <div class="field">
+              <label for="habilidadesBlandas">Habilidades blandas (1-10)</label>
+              <input id="habilidadesBlandas" type="number" min="1" max="10" th:field="*{habilidadesBlandas}" required />
+            </div>
+
+            <div class="field">
+              <label for="fotoPerfilUrl">Foto de perfil (URL)</label>
+              <input id="fotoPerfilUrl" type="text" th:field="*{fotoPerfilUrl}" placeholder="https://..." />
+            </div>
+
+            <div class="field" style="grid-column: 1 / -1;">
+              <label for="historial">Historial</label>
+              <textarea id="historial" th:field="*{historial}" rows="4"></textarea>
+            </div>
+
+            <div class="field" style="grid-column: 1 / -1;">
+              <label for="valoracionesGenerales">Valoraciones generales</label>
+              <textarea id="valoracionesGenerales" th:field="*{valoracionesGenerales}" rows="4"></textarea>
+            </div>
+          </div>
+
+          <div class="preview">
+            <img class="avatar"
+              th:src="${(cliente.fotoPerfilUrl != null && !#strings.isEmpty(cliente.fotoPerfilUrl)) ? cliente.fotoPerfilUrl : 'https://via.placeholder.com/200'}"
+              alt="Vista previa" />
+            <div style="min-width:0;">
+              <div><b>Vista previa</b></div>
+              <small class="help">Se verá así en el listado general.</small>
+            </div>
+          </div>
+
+          <div class="row">
+            <button class="btn btn-primary" type="submit"
+              th:text="${modo} == 'editar' ? 'Actualizar' : 'Guardar'">Guardar</button>
+            <a class="btn btn-secondary" th:href="@{/admin/clientes}">Volver</a>
+          </div>
+
+        </form>
+      </section>
+
+    </main>
+
+    <footer>
+      © <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2025</span> Testok Argentina
+    </footer>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,17 @@
+com\testok\TestokApplication.class
+com\testok\exceptions\AccesoDenegadoException.class
+com\testok\config\DataSeeder.class
+com\testok\config\SecurityConfig.class
+com\testok\controllers\AdminClienteController.class
+com\testok\entities\Rol.class
+com\testok\controllers\AdminUsuarioController.class
+com\testok\repositories\ClienteRepository.class
+com\testok\services\CustomUserDetailsService.class
+com\testok\entities\Cliente.class
+com\testok\controllers\ClienteController.class
+com\testok\entities\Usuario.class
+com\testok\controllers\AuthController.class
+com\testok\services\UsuarioService.class
+com\testok\controllers\ErrorControllerCustom.class
+com\testok\services\ClienteService.class
+com\testok\repositories\UsuarioRepository.class

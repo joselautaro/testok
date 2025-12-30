@@ -1,0 +1,65 @@
+<!-- <!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Clientes</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 10px; }
+        th { background: #f5f5f5; text-align: left; }
+        .top { display:flex; justify-content: space-between; align-items:center; }
+        .btn { padding:10px 14px; background:#111; color:#fff; text-decoration:none; border-radius:8px; }
+        .msg-ok { padding:10px; background:#e8ffe8; border:1px solid #b6ffb6; margin-top: 12px; border-radius:8px; }
+        .msg-err { padding:10px; background:#ffecec; border:1px solid #ffb3b3; margin-top: 12px; border-radius:8px; }
+        .actions { display:flex; gap:10px; align-items:center; }
+        .link { text-decoration:none; padding:8px 12px; border-radius:8px; display:inline-block; }
+        .edit { background:#f0f0f0; color:#111; border:1px solid #ddd; }
+        .del { background:#ffecec; color:#a40000; border:1px solid #ffb3b3; cursor:pointer; }
+        form { margin:0; }
+    </style>
+</head>
+<body>
+
+<div class="top">
+    <h1>Clientes</h1>
+    <a class="btn" th:href="@{/clientes/nuevo}">+ Nuevo cliente</a>
+</div>
+
+<div class="msg-ok" th:if="${ok}" th:text="${ok}"></div>
+<div class="msg-err" th:if="${err}" th:text="${err}"></div>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Email</th>
+        <th style="width: 220px;">Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:if="${#lists.isEmpty(clientes)}">
+        <td colspan="4">No hay clientes todavía.</td>
+    </tr>
+
+    <tr th:each="c : ${clientes}">
+        <td th:text="${c.id}"></td>
+        <td th:text="${c.nombre}"></td>
+        <td th:text="${c.email}"></td>
+        <td>
+            <div class="actions">
+                <a class="link edit" th:href="@{|/clientes/${c.id}/editar|}">Editar</a>
+
+                <form th:action="@{|/clientes/${c.id}/eliminar|}" method="post"
+                      onsubmit="return confirm('¿Seguro que querés eliminar este cliente?');">
+                    <button class="link del" type="submit">Eliminar</button>
+                </form>
+            </div>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html> -->
